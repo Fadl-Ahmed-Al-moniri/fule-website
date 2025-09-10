@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+    <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Fuel Storage Dashboard</title>
+                <link rel="stylesheet" href="assets/css/loader.css" />
+                <link
+                href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+                rel="stylesheet"
+                />
+                <link rel="stylesheet" href="./assets/css/tailwind.output.css" />
+                <script
+                src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+                defer
+                ></script>
+                <script src="./assets/js/init-alpine.js"></script>
+                <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+                />
+                <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+                defer
+                ></script>
+                <script src="./assets/js/charts-lines.js" defer></script>
+                <script src="./assets/js/charts-pie.js" defer></script>
+
+    </head>
+    <body>
+        <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen }">
+            <div class="loader-overlay"></div>
+            <div class="loader"></div>
+                <!-- Desktop Sidebar -->
+            <aside id="sidebar-desktop-container" class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0"></aside>
+                
+            <div class="flex-1 flex flex-col">
+                    <!-- Mobile Sidebar -->
+                    <!-- Backdrop -->
+
+                <div id="sidebar-mobile-container"></div>
+                
+                <div class="flex flex-col flex-1 h-full w-full">
+                    <header id="header-container" class="z-10 py-4 bg-white shadow-md dark:bg-gray-800"></header>
+                    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-6" x-data="{ isModalOpen: false, openModal() { this.isModalOpen = true }, closeModal() { this.isModalOpen = false } }">
+                            <!-- Header Section -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 card-hover fade-in">
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                                    <div class="slide-in">
+                                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2">Transfer Operations Management</h1>
+                                    </div>
+                                    <div class="flex flex-nowrap justify-end items-center">
+                                        <button id="open" @click="openModal" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                            <span class="flex items-center justify-center gap-2">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                </svg>
+                                                <span class="hidden sm:inline">Add New Operation</span>
+                                                <span class="sm:hidden">Add Operation</span>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                        </div>
+                        
+                        <!-- Operations Table -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8 fade-in">
+                            <div class="table-responsive">
+                                            <div class="overflow-x-auto">
+                                                <table class="w-full">
+                                                    <thead class="bg-gray-500 dark:bg-gray-700">
+                                                        <tr class="text-xs font-semibold tracking-wide text-left text-gray-600 dark:text-gray-400 uppercase border-b">
+                                                            <th class="px-4 py-4 mobile-text-sm">ID</th>
+                                                            <th class="px-4 py-4 mobile-text-sm">From Warehouse</th>
+                                                            <th class="px-4 py-4 mobile-text-sm">To Warehouse</th>
+                                                            <th class="px-4 py-4 mobile-text-sm">Date of Transfer</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  md:table-cell">Paper </th>
+                                                            <th class="px-4 py-4 mobile-text-sm  sm:table-cell">Items</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Deliverer Name</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Recipient User</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Operation Statement</th>
+                                                            <th class="px-4 py-4 mobile-text-sm">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="operationsBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                            </div>
+                                    
+                            <div id="no_operations" class="hidden text-center py-12 text-gray-500 dark:text-gray-400">
+                                <div class="text-6xl mb-4">📦</div>
+                                    <h3 class="text-xl font-semibold mb-2">No Transfer Operations Found</h3>
+                                    <p class="text-gray-400">Start by creating your first Transfer operation</p>
+                            </div>
+                        </div>
+                        <div
+                            x-show="isModalOpen"
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+                            style="display: none;">
+                            
+
+                            <div
+                                x-show="isModalOpen"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 transform scale-95"
+                                x-transition:enter-end="opacity-100 transform scale-100"
+                                x-transition:leave="transition ease-in duration-200"
+                                x-transition:leave-start="opacity-100 transform scale-100"
+                                x-transition:leave-end="opacity-0 transform scale-95"
+                                @click.away="closeModal"
+                                @keydown.escape="closeModal"
+                                class="w-screen  max-h-xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col sm:rounded-lg"
+                                role="dialog"
+                                id="modal">
+
+
+                                <!-- Modal Header (Fixed) -->
+                                <header class="flex-shrink-0 flex justify-between items-center p-4 md:p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800 rounded-t-xl">
+                                    <div>
+                                        <h3 id="operation_title" class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200">Create New Operation</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Fill in the details below</p>
+                                    </div>
+                                    <button aria-label="close" @click="closeModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-3xl interactive-element p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                        ✕
+                                    </button>
+                                </header>
+
+                                <div class="flex-grow overflow-y-auto p-4 md:p-6">
+                                    <form id="transfer_form">
+                                        <input type="hidden" id="operationId">
+
+                                        <!-- Basic Information Section -->
+                                        <div class="section-card border-b dark:border-gray-700 pb-6 mb-6">
+                                            <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-3">
+                                                <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                </div>
+                                                Basic Information
+                                            </h4>
+                                            <div class="flex flex-col md:flex-row gap-6">
+                                                <div class="flex-1 min-w-0">
+                                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">From Warehouse</label>
+                                                    <select id="from_warehouse" class="form-select w-full"></select>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">to Warehouse</label>
+                                                    <select id="to_warehouse" class="form-select w-full"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                            <!-- Date and Reference Section -->
+                                        <div class="section-card border-b dark:border-gray-700 pb-6 mb-6">
+                                                <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-3">
+                                                    <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                                                        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    Date & References
+                                                </h4>
+                                                <!-- All fields in one row -->
+                                                <div class="flex flex-col md:flex-row gap-6">
+                                                    <div class="flex-1 min-w-0">
+                                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Date of Transfer</label>
+                                                        <input id="operation_date" type="datetime-local" class="form-input w-full" required/>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Paper Reference #</label>
+                                                        <input id="paper_ref_number" type="text" class="form-input w-full" placeholder="P-001" />
+                                                    </div>
+                                                </div>
+                                        </div>
+
+                                            <!-- Personnel Information Section -->
+                                        <div class="section-card border-b dark:border-gray-700 pb-6 mb-6">
+                                                <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-3">
+                                                    <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                                                        <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    Personnel Information
+                                                </h4>
+                                                <!-- All fields in one row -->
+                                                <div class="flex flex-col md:flex-row gap-6">
+                                                    <div class="flex-1 min-w-0">
+                                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Deliverer Name</label>
+                                                        <input id="delivere_job_name" type="text" class="form-input w-full" placeholder="Ahmed Mohamed" />
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Deliverer Job Number</label>
+                                                        <input id="delivere_job_number" type="text" class="form-input w-full" placeholder="12345" />
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Recipient Job (Optional)</label>
+                                                        <input id="recipient_job" type="text" class="form-input w-full" placeholder="Warehouse Manager" />
+                                                    </div>
+                                                </div>
+                                        </div>
+
+                                            <!-- Description Section -->
+                                        <div class="section-card border-b dark:border-gray-700 pb-6 mb-6">
+                                            <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-3">
+                                                    <div class="p-2 bg-amber-100 dark:bg-amber-900 rounded-lg">
+                                                        <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    Description & Statement
+                                            </h4>
+                                            <!-- All fields in one row -->
+                                            <div class="flex flex-col lg:flex-row gap-6">
+                                                <div class="flex-1 min-w-0">
+                                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Operation Statement</label>
+                                                    <textarea id="operation_statement" rows="2" class="form-input resize-none w-full" placeholder="Brief description of the operation..."></textarea>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Operation Description</label>
+                                                    <textarea id="operation_descrabtion" rows="2" class="form-input resize-none w-full" placeholder="Detailed description of the operation..."></textarea>      
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                            <!-- Items Section (This section is best left as is due to the table structure) -->
+                                        <div class="section-card justify-between  border-b dark:border-gray-700 pb-6 mb-6">
+                                            <div class="flex flex-col sm:flex-row justify-between  sm:items-center mb-6 gap-4">
+                                                <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                                                    <div class="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
+                                                            <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                            </svg>
+                                                    </div>
+                                                        The Items
+                                                </h4>
+                                                <button type="button" id="addItemBtn" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                                        <span class="flex items-center gap-2">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                            </svg>
+                                                            <span class="hidden sm:inline">Add Item</span>
+                                                            <span class="sm:hidden">Add</span>
+                                                        </span>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600">
+                                                    <table class=" ">
+                                                        <thead>
+                                                            <!-- Table header remains the same -->
+                                                        </thead>
+                                                        <tbody id="itemsTbody">
+                                                            <!-- Table body remains the same -->
+                                                        </tbody>
+                                                    </table>
+                                            </div>
+                                        </div>
+
+                                            <!-- Attachments Section -->
+                                        <div class="section-card pb-6 mb-6">
+                                                <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-3">
+                                                    <div class="p-2 bg-rose-100 dark:bg-rose-900 rounded-lg">
+                                                        <svg class="w-6 h-6 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                                        </svg>
+                                                    </div>
+                                                    Attachments
+                                                </h4>
+                                                <!-- This is a single element, so it takes the full width -->
+                                                <div>
+                                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Upload Multiple Files</label>
+                                                    <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
+                                                        <input id="attachments" type="file" multiple class="hidden" />
+                                                        <label for="attachments" class="cursor-pointer">
+                                                            <div class="text-gray-400 mb-4">
+                                                                <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                                </svg>
+                                                            </div>
+                                                            <p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Click to upload files</p>
+                                                            <p class="text-sm text-gray-500 dark:text-gray-400">or drag and drop</p>
+                                                        </label>
+                                                    </div>
+                                                    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Supported formats: PDF, DOC, JPG, PNG (Max 10MB per file)</p>
+                                                </div>
+                                        </div>
+
+                                            <!-- Form Actions -->
+                                        <div class="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t border-gray-200 dark:border-gray-600">
+                                                <button type="button" id="cancelBtn" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" @click="closeModal">Cancel</button>
+                                                <button type="submit" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" id="submitBtn">Save Operation</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+            <script src="assets/js/loadComponent.js"></script>
+            <script type="module" src="./assets/js/pages/transfer_opreation.js"></script>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+

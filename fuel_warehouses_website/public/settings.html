@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Fuel Storage Dashboard</title>
+        <link rel="stylesheet" href="assets/css/loader.css" />
+        <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+        />
+        <link rel="stylesheet" href="./assets/css/tailwind.output.css" />
+        <script
+        src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+        defer
+        ></script>
+        <script src="./assets/js/init-alpine.js"></script>
+    </head>
+    <body>
+        <div
+        class="flex min-h-screen bg-gray-50 dark:bg-gray-900"
+        :class="{ 'overflow-hidden': isSideMenuOpen }"
+        >
+        <div class="loader-overlay"></div>
+        <div class="loader"></div>
+        <!-- Desktop sidebar -->
+        
+        
+        <!-- Desktop Sidebar -->
+        <aside id="sidebar-desktop-container" class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0"></aside>
+        
+        <div class="flex-1 flex flex-col">
+            <!-- Mobile Sidebar -->
+            <!-- Backdrop -->
+
+            <div id="sidebar-mobile-container"></div>
+            <div class="flex flex-col flex-1 h-full w-full">
+                <header id="header-container" class="z-10 py-4 bg-white shadow-md dark:bg-gray-800"></header>
+                
+                    <main class="container   p-6 mx-auto " id="dashboard-container">
+                        <div class="flex flex-nowrap justify-end items-center">
+                            <button
+                                    id="logoutBtn"
+                                    class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 active:bg-purple-600 focus:outline-none focus:shadow-outline-purple"
+                                    >
+                                    <svg
+                                        class="w-4 h-4 mr-2"
+                                        aria-hidden="true"
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                                        ></path>
+                                    </svg>
+                                    Log out
+                            </button>
+                        </div>
+                        <div class="max-w-4xl mx-auto my-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                                <!-- Header -->
+                                <div class="flex items-center space-x-6 p-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-gray-900 dark:to-gray-700">
+                                <img src="assets/img/user.svg" alt="avatar"
+                                    class="w-12 h-12 rounded-full object-cover"/>
+                                <div>
+                                    <!-- عرض البيانات -->
+                                    <h2 id="viewUsername" class="text-2xl font-semibold text-gray-800 dark:text-gray-200"></h2>
+                                    <p id="viewEmail" class="text-gray-600 dark:text-gray-400"></p>
+                                </div>
+                                <button
+                                    id="editBtn"
+                                    class="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none"
+                                >
+                                    Edit
+                                </button>
+                                </div>
+                            
+                                <!-- Body -->
+                                <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                                <!-- Read-only fields -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">Role</label>
+                                    <p id="viewRole" class="mt-1 text-gray-800 dark:text-gray-200"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">Manager</label>
+                                    <p id="viewManager" class="mt-1 text-gray-800 dark:text-gray-200"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">Status</label>
+                                    <p class="mt-1">
+                                    <span id="viewStatus"
+                                            class="px-2 py-1 rounded-full text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100"
+                                    ></span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">Created At</label>
+                                    <p id="viewCreatedAt" class="mt-1 text-gray-800 dark:text-gray-200"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">Updated At</label>
+                                    <p id="viewUpdatedAt" class="mt-1 text-gray-800 dark:text-gray-200"></p>
+                                </div>
+                            
+                                <!-- Editable fields -->
+                                <div>
+                                    <label for="inputUsername" class="block text-sm font-medium text-gray-600 dark:text-gray-400">Username</label>
+                                    <input
+                                    type="text"
+                                    id="inputUsername"
+                                    name="username"
+                                    disabled
+                                    class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                                    />
+                                </div>
+                                <div>
+                                    <label for="inputPassword" class="block text-sm font-medium text-gray-600 dark:text-gray-400">Password</label>
+                                    <input
+                                    type="password"
+                                    id="inputPassword"
+                                    name="password"
+                                    disabled
+                                    placeholder="••••••••"
+                                    class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                                    />
+                                </div>
+                            
+                                <!-- Save/Cancel buttons (hidden until edit) -->
+                                <div class="col-span-full flex justify-end space-x-3 mt-4 hidden" id="formActions">
+                                    <button
+                                    type="button"
+                                    id="cancelBtn"
+                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none"
+                                    >
+                                    Cancel
+                                    </button>
+                                    <button
+                                    type="submit"
+                                    class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 active:bg-purple-600 focus:outline-none focus:shadow-outline-purple"
+                                    >
+                                    Save
+                                    </button>
+                                </div>
+                                </form>
+                        </div>
+                    </main>
+                <!-- No Data Message -->
+                <div id="no-data-message" class="container px-6 mx-auto py-6 text-center hidden">
+                <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">There are no items to display.</h4>
+                </div>
+        
+            </div>
+        </div>
+
+        
+        <script src="assets/js/loadComponent.js"></script>
+        <script type="module" src="assets/js/pages/setting.js"></script>
+
+
+    </body>
+</html>

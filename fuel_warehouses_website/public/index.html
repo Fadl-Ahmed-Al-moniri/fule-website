@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fuel Storage Dashboard</title>
+    <link rel="stylesheet" href="assets/css/loader.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/css/tailwind.output.css" />
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+      defer
+    ></script>
+    <script src="./assets/js/init-alpine.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+      defer
+    ></script>
+    <script src="./assets/js/charts-lines.js" defer></script>
+    <script src="./assets/js/charts-pie.js" defer></script>
+
+  </head>
+  <body>
+    <div
+      class="flex min-h-screen bg-gray-50 dark:bg-gray-900"
+      :class="{ 'overflow-hidden': isSideMenuOpen }"
+    >
+      <div class="loader-overlay"></div>
+      <div class="loader"></div>
+      <!-- Desktop sidebar -->
+      
+      
+      <!-- Desktop Sidebar -->
+      <aside id="sidebar-desktop-container" class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0"></aside>
+    
+      <div class="flex-1 flex flex-col">
+          <!-- Mobile Sidebar -->
+           <!-- Backdrop -->
+
+          <div id="sidebar-mobile-container"></div>
+          <div class="flex flex-col flex-1 h-full w-full">
+            <header id="header-container" class="z-10 py-4 bg-white shadow-md dark:bg-gray-800"></header>
+      
+            <main class="container px-6 mx-auto py-6" id="dashboard-container">
+              <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">Dashboard</h2>
+          
+              <!-- Cards -->
+              <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+                <!-- Employees -->
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                  <div class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Number of employees</p>
+                    <p id="employeeCount" class="text-lg font-semibold text-gray-700 dark:text-gray-200">--</p>
+                  </div>
+                </div>
+                <!-- Total Posts -->
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                  <div class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full">
+                    
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fill-rule="evenodd"
+                        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                    
+      
+                  </div>
+                  <div>
+                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Total posts</p>
+                    <p id="totalPosts" class="text-lg font-semibold text-gray-700 dark:text-gray-200">--</p>
+                  </div>
+                </div>
+                <!-- Connected Accounts -->
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                  <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                          d="M12.293 7.293a1 1 0 011.414 0L17 10.586a2 2 0 010 2.828l-3.293 3.293a1 1 0 01-1.414-1.414L15.586 12l-2.879-2.879a1 1 0 010-1.414zM7.707 12.707a1 1 0 01-1.414 0L3 9.414a2 2 0 010-2.828L6.293 3.293a1 1 0 011.414 1.414L4.414 7l2.879 2.879a1 1 0 010 1.414z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Connected accounts</p>
+                    <p id="connectedAccounts" class="text-lg font-semibold text-gray-700 dark:text-gray-200">--</p>
+                  </div>
+                </div>
+                <!-- Followers -->
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                  <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 2a4 4 0 100 8 4 4 0 000-8zM3 14a7 7 0 0114 0v1H3v-1z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Total followers</p>
+                    <p id="totalFollowers" class="text-lg font-semibold text-gray-700 dark:text-gray-200">--</p>
+                  </div>
+                </div>
+              </div>
+          
+              <!-- Charts -->
+              <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">Charts</h2>
+              <div class="grid gap-6 mb-8 md:grid-cols-2">
+                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                  <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Posts by platform</h4>
+                  <canvas class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400" id="postsChart"></canvas>
+                </div>
+                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                  <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Followers by platform</h4>
+                  <canvas class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400" id="followersChart"></canvas>
+                </div>
+              </div>
+      
+            
+            </main>
+          
+            <!-- No Data Message -->
+            <div id="no-data-message" class="container px-6 mx-auto py-6 text-center hidden">
+              <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">There are no items to display.</h4>
+            </div>
+      
+          </div>
+    </div>
+
+    
+    <script src="assets/js/loadComponent.js"></script>
+    <script type="module" src="assets/js/pages/index.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Fuel Storage Dashboard</title>
+        <link rel="stylesheet" href="assets/css/loader.css" />
+        <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+        />
+        <link rel="stylesheet" href="./assets/css/tailwind.output.css" />
+        <script
+        src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+        defer
+        ></script>
+        <script src="./assets/js/init-alpine.js"></script>
+        <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+        />
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+        defer
+        ></script>
+        <script src="./assets/js/charts-lines.js" defer></script>
+        <script src="./assets/js/charts-pie.js" defer></script>
+
+    </head>
+    <body>
+        <div
+        class="flex min-h-screen bg-gray-50 dark:bg-gray-900"
+        :class="{ 'overflow-hidden': isSideMenuOpen }"
+        >
+        <div class="loader-overlay"></div>
+        <div class="loader"></div>
+        <!-- Desktop sidebar -->
+        
+        
+        <!-- Desktop Sidebar -->
+        <aside id="sidebar-desktop-container" class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0"></aside>
+        
+        <div class="flex-1 flex flex-col">
+            <!-- Mobile Sidebar -->
+            <!-- Backdrop -->
+
+            <div id="sidebar-mobile-container"></div>
+            <div class="flex flex-col flex-1 h-full w-full">
+                <header id="header-container" class="z-10 py-4 bg-white shadow-md dark:bg-gray-800"></header>
+        
+                <main class="container  p-6 mx-auto py-6 " id="dashboard-container">
+                    <div class="flex flex-nowrap justify-end items-center">
+                        
+                    <button
+                        id="open"
+                        @click="openModal"
+                        class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                    >
+                        Add Item
+                    </button>
+                    </div>
+                <!-- Modal backdrop. This what you want to place close to the closing body tag -->
+                <div
+                x-show="isModalOpen"
+                x-transition:enter="transition ease-out duration-150"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
+                >
+                <!-- Modal -->
+                    <div
+                    x-show="isModalOpen"
+                    x-transition:enter="transition ease-out duration-150"
+                    x-transition:enter-start="opacity-0 transform translate-y-1/2"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0  transform translate-y-1/2"
+                    @click.away="closeModal"
+                    @keydown.escape="closeModal"
+                    class="w-full h-auto px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
+                    role="dialog"
+                    id="modal"
+                    >
+
+                    <header class="flex justify-between">
+                        <p id="operation_type"
+                        class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300"
+                        >
+                        Create Item
+                        </p>
+                        <button
+                        class="inline-flex items-center justify-center w-6 h-6 text-gray-400 transition-colors duration-150 rounded dark:hover:text-gray-200 hover: hover:text-gray-700"
+                        aria-label="close"
+                        @click="closeModal"
+                        >
+                        <svg
+                            class="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            role="img"
+                            aria-hidden="true"
+                        >
+                            <path
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                            fill-rule="evenodd"
+                            ></path>
+                        </svg>
+                        </button>
+
+                    </header>
+                    <!-- Modal body -->
+                    <div class="mt-8 mb-10">
+
+                        <form id="item_form" class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                            <input type="hidden" id="itemId">
+                            <label class="block mt-4 text-sm">
+                                <span class="text-gray-700 dark:text-gray-400">Item name</span>
+                                <input
+                                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                    type="name"
+                                    id="name"
+                                    name="name"
+                                    required
+                                />
+
+                            </label>
+                            <button id="operation_type_b" type="submit" class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                Create Itme
+                            </button>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+                    <h4
+                        class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300"
+                        >
+                        Item Tables
+                    </h4>
+                    <div class="w-full overflow-hidden rounded-lg shadow-xs">
+                            <div class="w-full overflow-x-auto">
+                            <table class="w-full whitespace-no-wrap">
+                                <thead>
+                                <tr
+                                    class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
+                                >
+                                    <th class="px-2 py-3">Id</th>
+                                    <th class="px-4 py-3">Name</th>
+                                    <th class="px-4 py-3">Is Active</th>
+                                    <th class="px-4 py-3">Actions</th>
+
+                                </tr>
+                                </thead>
+                                <tbody
+                                id="itemBody"
+                                class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800"
+                                >
+                                
+                                </tbody>
+                            </table>
+                            </div>
+                                                        <p
+                            id="no_item"
+                            class="hidden text-center py-4 text-gray-500 dark:text-gray-400"
+                            >
+                            There are no Item
+                            </p>
+
+                    </div>
+                </main>
+                <!-- No Data Message -->
+                <div id="no-data-message" class="container px-6 mx-auto py-6 text-center hidden">
+                </div>
+        
+            </div>
+        </div>
+
+        
+        <script src="assets/js/loadComponent.js"></script>
+        <script type="module" src="assets/js/pages/item.js"></script>
+
+    </body>
+</html>
