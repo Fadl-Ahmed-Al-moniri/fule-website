@@ -53,6 +53,7 @@
                                     <div class="slide-in">
                                         <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2">Supply Operations Management</h1>
                                     </div>
+
                                     <div class="flex flex-nowrap justify-end items-center">
                                         <button id="open" @click="openModal" class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                             <span class="flex items-center justify-center gap-2">
@@ -87,7 +88,6 @@
                                         <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Deliverer</th>
                                         <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Recipient User</th>
                                         <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Operation Statement</th>
-                                        <th class="px-4 py-4 mobile-text-sm">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="operationsBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -145,6 +145,7 @@
                             <input type="hidden" id="original_item_line_id">
 
                             <div class="space-y-6">
+
                                 <!-- Old and New Quantity -->
                                 <div class="flex flex-col md:flex-row gap-6">
                                     <div class="flex-1">
@@ -395,7 +396,7 @@
 
                 </div>
             </div>
-            </main>
+                    </main>
 
             <script src="assets/js/loadComponent.js"></script>
             <script type="module" src="./assets/js/pages/supply_opreation.js"></script>

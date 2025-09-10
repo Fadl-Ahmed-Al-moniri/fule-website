@@ -116,10 +116,6 @@ async function loadtransferOperations() {
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.recipient_user_name || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.operation_statement || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm">
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <button class="btn-edit text-xs px-3 py-1" data-id="${op.id}">Edit</button>
-                        <button class="btn-danger text-xs px-3 py-1" data-id="${op.id}">Delete</button>
-                    </div>
                 </td>
             `;
             operationsBody.appendChild(tr);

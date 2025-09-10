@@ -27,7 +27,7 @@ export const API_ENDPOINTS = {
         returnExport: `${BASE_URL}/api/operations/return_export/`,
         damage: `${BASE_URL}/api/operations/damage/`,
         transfer: `${BASE_URL}/api/operations/transfer/`,
-        modifySupply: `${BASE_URL}/api/operations/modify-supply/`,
+        modifySupply: `${BASE_URL}/api/operations/modify_supply/`,
         modifyExport: `${BASE_URL}/api/operations/modify_export/`,
     },
 

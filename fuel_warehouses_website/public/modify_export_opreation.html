@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+    <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Fuel Storage Dashboard</title>
+                <link rel="stylesheet" href="assets/css/loader.css" />
+                <link
+                href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+                rel="stylesheet"
+                />
+                <link rel="stylesheet" href="./assets/css/tailwind.output.css" />
+                <script
+                src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+                defer
+                ></script>
+                <script src="./assets/js/init-alpine.js"></script>
+                <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+                />
+                <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+                defer
+                ></script>
+                <script src="./assets/js/charts-lines.js" defer></script>
+                <script src="./assets/js/charts-pie.js" defer></script>
+
+    </head>
+    <body>
+        <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen }">
+            <div class="loader-overlay"></div>
+            <div class="loader"></div>
+                <!-- Desktop Sidebar -->
+            <aside id="sidebar-desktop-container" class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0"></aside>
+                
+            <div class="flex-1 flex flex-col">
+                    <!-- Mobile Sidebar -->
+                    <!-- Backdrop -->
+
+                <div id="sidebar-mobile-container"></div>
+                
+                <div class="flex flex-col flex-1 h-full w-full">
+                    <header id="header-container" class="z-10 py-4 bg-white shadow-md dark:bg-gray-800"></header>
+                    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-6" >
+                            <!-- Header Section -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 card-hover fade-in">
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                                    <div class="slide-in">
+                                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2">Modify export Operations Management</h1>
+                                    </div>
+                                </div>
+                        </div>
+                        
+                        <!-- Operations Table -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8 fade-in">
+                            <div class="table-responsive">
+                                            <div class="overflow-x-auto">
+                                                <table class="w-full">
+                                                    <thead class="bg-gray-500 dark:bg-gray-700">
+                                                        <tr class="text-xs font-semibold tracking-wide text-left text-gray-600 dark:text-gray-400 uppercase border-b">
+                                                            <th class="px-4 py-4 mobile-text-sm">ID</th>
+                                                            <th class="px-4 py-4 mobile-text-sm">Warehouse</th>
+                                                            <th class="px-4 py-4 mobile-text-sm">Main Opreation</th>
+                                                            <th class="px-4 py-4 mobile-text-sm">Date of destruction</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  sm:table-cell">Item</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Old Quantity</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  lg:table-cell">New Quantity</th>
+                                                            <th class="px-4 py-4 mobile-text-sm  lg:table-cell">Operation Statement</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="operationsBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                            </div>
+                                    
+                            <div id="no_operations" class="hidden text-center py-12 text-gray-500 dark:text-gray-400">
+                                <div class="text-6xl mb-4">📦</div>
+                                    <h3 class="text-xl font-semibold mb-2">No Modify export Operations Found</h3>
+                                    <p class="text-gray-400">Start by creating your first Modify export operation</p>
+                            </div>
+                        </div>
+
+                    </main>
+            <script src="assets/js/loadComponent.js"></script>
+            <script type="module" src="./assets/js/pages/modify_export_opreation.js"></script>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+

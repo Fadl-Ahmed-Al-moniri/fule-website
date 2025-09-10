@@ -26,6 +26,16 @@ const descriptionInput = document.getElementById('operation_descrabtion');
 const attachmentsInput = document.getElementById('attachments');
 
 
+
+const modifyForm = document.getElementById('modify_form');
+const originalItemLineIdInput = document.getElementById('original_item_line_id');
+const modifyItemInfo = document.getElementById('modifyItemInfo');
+const oldQuantityInput = document.getElementById('old_quantity');
+const newQuantityInput = document.getElementById('new_quantity');
+const modificationDateInput = document.getElementById('modification_date');
+const modificationReasonInput = document.getElementById('modification_reason');
+
+
 /**
  * @param {HTMLElement} selectElement 
  * @param {string} endpoint 
@@ -99,29 +109,67 @@ async function loadexportOperations() {
             tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150';
             
             // تحويل التاريخ إلى صيغة مقروءة
-            const operationDate = new Date(op.operation_date).toLocaleDateString();
-            const itemsHtml = op.items_details.map(item => {
-            const formattedQuantity = parseFloat(item.quantity).toLocaleString('en-US');
-            
-            return `<div class="whitespace-nowrap">${item.item_name}: <span class="font-semibold">${formattedQuantity}</span></div>`;
-            }).join('');
+            tr.dataset.operationId = op.id;
+            tr.dataset.warehouseName = op.warehouse_name;
+
+            const operationDate = op.operation_date ? new Date(op.operation_date).toLocaleDateString('en-GB') : 'N/A';
+
+            const itemsHtml = `
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50 dark:bg-gray-900/50">
+                            <tr>
+                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Item</th>
+                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Qty</th>
+                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Returned</th>
+                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Effective</th>
+                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            ${(op.items_details || []).map(item => {
+                                const formattedQuantity = parseFloat(item.quantity).toLocaleString('en-US');
+                                const formattedReturnedQuantity = parseFloat(item.returned_quantity).toLocaleString('en-US');
+                                const formattedEffectiveQuantity = parseFloat(item.effective_quantity).toLocaleString('en-US');
+
+                                return `
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                        <td class="px-3 py-3 whitespace-nowrap text-sm font-semibold">${item.item_name}</td>
+                                        <td class="px-3 py-3 whitespace-nowrap text-sm">${formattedQuantity}</td>
+                                        <td class="px-3 py-3 whitespace-nowrap text-sm">${formattedReturnedQuantity}</td>
+                                        <td class="px-3 py-3 whitespace-nowrap text-sm font-bold">${formattedEffectiveQuantity}</td>
+                                        <td class="px-3 py-3 whitespace-nowrap text-sm">
+                                            <button 
+                                                class="modify-item-btn btn-primary text-xs"
+                                                @click="openModifyModal" 
+                                                data-item-line-id="${item.id}"
+                                                data-item-name="${item.item_name}"
+                                                data-current-quantity="${item.effective_quantity}">
+                                                Modify
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
             
             tr.innerHTML = `
                 <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">#${op.id}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${op.warehouse_name}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${operationDate}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  md:table-cell">${op.paper_ref_number}</td>
-                <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  md:table-cell">${op.beneficiary}</td>
+                <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  md:table-cell">${op.beneficiary_name}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  sm:table-cell">${itemsHtml}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.delivere_user_name || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.recipient_name || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.operation_statement || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.date_actual_transfer || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm">
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <button class="btn-edit text-xs px-3 py-1" data-id="${op.id}">Edit</button>
-                        <button class="btn-danger text-xs px-3 py-1" data-id="${op.id}">Delete</button>
-                    </div>
+
                 </td>
             `;
             operationsBody.appendChild(tr);
@@ -225,6 +273,40 @@ async function handleFormSubmit(e) {
 }
 
 
+async function handleModifyFormSubmit(e) {
+
+        e.preventDefault();
+        showLoader();
+
+        const payload = {
+            original_item_line: originalItemLineIdInput.value,
+            
+            new_quantity: newQuantityInput.value,
+            old_quantity: oldQuantityInput.value,
+            operation_date: modificationDateInput.value,
+            reason: modificationReasonInput.value,
+        };
+
+
+        try {
+            const res = await postRequest(API_ENDPOINTS.Operations.modifyExport, payload, token);
+            if (res.status === 201 || res.status === 200) {
+                alert('Modification saved successfully!');
+                document.querySelector('[x-data]').__x.get('closeModifyModal')();
+                modifyForm.reset();
+                await loadexportOperations();
+            } else {
+                throw new Error(JSON.stringify(res.data));
+            }
+        } catch (error) {
+            console.error('Save Modification Failed:', error);
+            alert(`Failed to save modification: ${error.message}`);
+        } finally {
+            hideLoader();
+        }
+}
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     populateSelect(warehouseSelect, API_ENDPOINTS.Inventory.warehouses, 'Select Warehouse');
@@ -232,6 +314,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadexportOperations();
     form.addEventListener('submit', handleFormSubmit);
+        operationsBody.addEventListener('click', (event) => {
+        const modifyButton = event.target.closest('.modify-item-btn');
+        if (!modifyButton) return;
 
+        event.preventDefault();
+        const row = modifyButton.closest('tr');
+        
+        originalItemLineIdInput.value = modifyButton.dataset.itemLineId;
+
+        modifyItemInfo.textContent = `Item: ${modifyButton.dataset.itemName}`;
+
+        oldQuantityInput.value = modifyButton.dataset.currentQuantity;
+        
+        // Reset fields that need user input
+        newQuantityInput.value = '';
+        modificationReasonInput.value = '';
+        // Set modification date to now
+        modificationDateInput.value = new Date().toISOString().slice(0, 16);
+
+        // Open the modal using Alpine.js
+        document.querySelector('[x-data]').__x.get('openModifyModal');
+});
     addItemBtn.addEventListener('click', addNewItemRow);
+    if (modifyForm) modifyForm.addEventListener('submit', handleModifyFormSubmit);
 });
