@@ -1,4 +1,3 @@
-// assets/js/returnexport.js
 import { postRequest, getRequest, deleteRequest } from '../services/apiService.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
 import { getUserToken } from '../utils/user-token.js';
@@ -79,7 +78,6 @@ async function addNewItemRow(itemId = null, qty = '') {
     `;
     itemsTbody.appendChild(newRow);
 
-    // populate the item select list and then set value if provided
     await populateSelect(newRow.querySelector('.item-select'), API_ENDPOINTS.Inventory.items, 'Select Item');
 
     if (itemId) {
@@ -87,7 +85,6 @@ async function addNewItemRow(itemId = null, qty = '') {
         const opt = Array.from(sel.options).find(o => String(o.value) === String(itemId));
         if (opt) sel.value = itemId;
         else {
-            // if option isn't present, append a temporary option with itemId as value (label may not be known)
             const tmp = document.createElement('option');
             tmp.value = itemId;
             tmp.textContent = `#${itemId}`;
@@ -101,7 +98,6 @@ async function addNewItemRow(itemId = null, qty = '') {
         qInput.value = qty;
     }
 
-    // remove handler
     newRow.querySelector('.remove-item').addEventListener('click', () => {
         newRow.remove();
     });
@@ -109,11 +105,9 @@ async function addNewItemRow(itemId = null, qty = '') {
     return newRow;
 }
 
-/* ---------- When user selects an original export operation: auto-fill fields ---------- */
 exportOperationSelect.addEventListener('change', async () => {
     const selectedId = exportOperationSelect.value;
     if (!selectedId) {
-        // clear relevant fields
         warehouseSelect.value = '';
         beneficiareSelect.value = '';
         operationDateInput.value = '';
@@ -129,21 +123,17 @@ exportOperationSelect.addEventListener('change', async () => {
     try {
         showLoader();
 
-        // Ensure selects have options loaded so we can set by ID
         await Promise.all([
             populateSelect(warehouseSelect, API_ENDPOINTS.Inventory.warehouses, 'Select Warehouse'),
             populateSelect(beneficiareSelect, API_ENDPOINTS.Accounts.beneficiaries, 'Select Beneficiare')
         ]);
 
-        // fetch single export operation details (expecting endpoint like /api/.../export/{id}/)
         const res = await getRequest(`${API_ENDPOINTS.Operations.export}${selectedId}/`, token);
         if (res.status && res.status >= 400) throw new Error('Failed to fetch selected export operation');
         const op = res.data ?? res;
 
-        // Fill main fields (try multiple property names returned by API)
         const warehouseId = op.warehouse ?? op.warehouse_id ?? op.warehouse?.id;
         const beneficiaryId = op.beneficiary ?? op.beneficiary_id ?? op.beneficiary?.id;
-        // if beneficiaryId undefined but beneficiary_name exists, try find matching option by text
         if (warehouseId) {
             const whOpt = Array.from(warehouseSelect.options).find(o => String(o.value) === String(warehouseId));
             if (whOpt) warehouseSelect.value = warehouseId;
@@ -161,19 +151,16 @@ exportOperationSelect.addEventListener('change', async () => {
                 beneficiareSelect.appendChild(tmp); beneficiareSelect.value = beneficiaryId;
             }
         } else if (op.beneficiary_name) {
-            // try match by visible text
             const found = Array.from(beneficiareSelect.options).find(o => o.textContent.trim() === String(op.beneficiary_name).trim());
             if (found) beneficiareSelect.value = found.value;
         }
 
         if (op.operation_date) operationDateInput.value = toLocalDatetimeInput(op.operation_date);
 
-        // Populate items table based on original operation items
         itemsTbody.innerHTML = '';
         const itemsList = op.items || op.items_details || [];
         for (const it of itemsList) {
-            // tolerate possible field names
-            const itemId = it.item ?? it.item_id ?? it.item; // tolerant
+            const itemId = it.item ?? it.item_id ?? it.item; 
             const qty = it.quantity ?? it.effective_quantity ?? 0;
             await addNewItemRow(itemId, qty);
         }
@@ -184,7 +171,6 @@ exportOperationSelect.addEventListener('change', async () => {
     }
 });
 
-/* ---------- Load Return Export Operations list (table) ---------- */
 async function loadReturnexportOperations() {
     try {
         showLoader();
@@ -228,12 +214,7 @@ async function loadReturnexportOperations() {
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${op.recipient_name ?? 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${op.operation_statement || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${op.date_actual_transfer ?? ''}</td>
-                <td class="px-4 py-4 text-sm">
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <button class="btn-edit text-xs px-3 py-1" data-id="${op.id}">Edit</button>
-                        <button class="btn-danger text-xs px-3 py-1" data-id="${op.id}">Delete</button>
-                    </div>
-                </td>
+
             `;
             operationsBody.appendChild(tr);
 
@@ -279,7 +260,6 @@ function toLocalDatetimeInput(isoString) {
     return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
 }
 
-/* ---------- Fill form for editing an existing return-export operation ---------- */
 async function fillFormForEdit(id) {
     try {
         showLoader();
@@ -287,7 +267,6 @@ async function fillFormForEdit(id) {
         if (res.status && res.status >= 400) throw new Error('Failed to fetch return operation');
         const op = res.data ?? res;
 
-        // Populate selects master lists first (ensure options exist)
         await Promise.all([
             populateSelect(warehouseSelect, API_ENDPOINTS.Warehouse.warehouse, 'Select Warehouse'),
             populateSelect(beneficiareSelect, API_ENDPOINTS.Accounts.beneficiaries, 'Select Beneficiaries'),
@@ -296,7 +275,6 @@ async function fillFormForEdit(id) {
         exportOperationSelect.value = op.original_operation ?? '';
         if (op.warehouse) warehouseSelect.value = op.warehouse;
         if (op.beneficiary_name) {
-            // try to match name to option
             const found = Array.from(beneficiareSelect.options).find(o => o.textContent.trim() === String(op.beneficiary_name).trim());
             if (found) beneficiareSelect.value = found.value;
         }
@@ -307,7 +285,6 @@ async function fillFormForEdit(id) {
         statementInput.value = op.operation_statement ?? '';
         descriptionInput.value = op.operation_descrabtion ?? '';
 
-        // Load items
         itemsTbody.innerHTML = '';
         const itemsList = op.items || op.items_details || [];
         for (const it of itemsList) {
@@ -324,7 +301,6 @@ async function fillFormForEdit(id) {
     }
 }
 
-/* ---------- Form submit handler (create new return dispatch) ---------- */
 async function handleFormSubmit(e) {
     e.preventDefault();
     showLoader();
@@ -408,7 +384,6 @@ async function handleFormSubmit(e) {
     }
 }
 
-/* ---------- Fill exportOperationSelect (list of export ops to choose from) ---------- */
 async function populateexportOperationsSelect() {
     try {
         const res = await getRequest(API_ENDPOINTS.Operations.export, token);
@@ -429,19 +404,14 @@ async function populateexportOperationsSelect() {
     }
 }
 
-/* ---------- Initialization ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-    // populate selects
     populateSelect(warehouseSelect, API_ENDPOINTS.Inventory.warehouses, 'Select Warehouse');
     populateSelect(beneficiareSelect, API_ENDPOINTS.Accounts.beneficiaries, 'Select Beneficiare');
 
-    // populate export operations list for original-operation selection
     populateexportOperationsSelect();
 
-    // load existing return-export operations table
     loadReturnexportOperations();
 
-    // handlers
     form.addEventListener('submit', handleFormSubmit);
     addItemBtn.addEventListener('click', () => addNewItemRow());
 });

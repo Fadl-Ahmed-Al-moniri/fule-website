@@ -96,7 +96,6 @@ async function loadDamageOperations() {
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150';
             
-            // تحويل التاريخ إلى صيغة مقروءة
             const operationDate = new Date(op.operation_date).toLocaleDateString();
             const itemsHtml = op.items_details.map(item => {
             const formattedQuantity = parseFloat(item.quantity).toLocaleString('en-US');
@@ -114,12 +113,6 @@ async function loadDamageOperations() {
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.recipient_user_name || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.operation_statement || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100  lg:table-cell">${op.reason || 'N/A'}</td>
-                <td class="px-4 py-4 text-sm">
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <button class="btn-edit text-xs px-3 py-1" data-id="${op.id}">Edit</button>
-                        <button class="btn-danger text-xs px-3 py-1" data-id="${op.id}">Delete</button>
-                    </div>
-                </td>
             `;
             operationsBody.appendChild(tr);
         });

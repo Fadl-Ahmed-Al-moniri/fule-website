@@ -47,7 +47,7 @@ async function populateSelect(selectElement, endpoint, placeholder) {
         const res = await getRequest(endpoint, token);
         if (res.status !== 200) throw new Error(`Failed to fetch data for ${placeholder}`);
         
-        selectElement.innerHTML = `<option value="">${placeholder}</option>`; // إعادة تعيين وإضافة الخيار الافتراضي
+        selectElement.innerHTML = `<option value="">${placeholder}</option>`; 
         
         res.data.forEach(item => {
             const option = document.createElement('option');
@@ -222,7 +222,7 @@ async function handleFormSubmit(e) {
     
     payload.append("warehouse", warehouseId);
     payload.append("supplier", supplierId);
-    payload.append("operation_date", operationDate); // تطابق مع اسم الموديل
+    payload.append("operation_date", operationDate); 
     
     if (paperRefInput.value) payload.append("paper_ref_number", paperRefInput.value);
     if (supplyBonInput.value) payload.append("supply_bon_number", supplyBonInput.value);
@@ -333,13 +333,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         oldQuantityInput.value = modifyButton.dataset.currentQuantity;
         
-        // Reset fields that need user input
         newQuantityInput.value = '';
         modificationReasonInput.value = '';
-        // Set modification date to now
         modificationDateInput.value = new Date().toISOString().slice(0, 16);
 
-        // Open the modal using Alpine.js
         document.querySelector('[x-data]').__x.get('openModifyModal');
 });
     loadSupplyOperations();
@@ -348,7 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addItemBtn.addEventListener('click', addNewItemRow);
 
-    // Attach form submit listeners
     if (form) form.addEventListener('submit', handleFormSubmit);
     if (modifyForm) modifyForm.addEventListener('submit', handleModifyFormSubmit);
     if (addItemBtn) addItemBtn.addEventListener('click', addNewItemRow);

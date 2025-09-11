@@ -1,4 +1,3 @@
-// assets/js/warehouses.js
 import { postRequest, getRequest ,putRequest , deleteRequest} from '../services/apiService.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
 import { getUserToken } from '../utils/user-token.js';
@@ -38,7 +37,6 @@ async function loadWarehouses() {
     if (res.status !== 200 && res.status !== 201) {
       throw new Error(res.message || 'Failed to fetch warehouses');
     }
-    // دعم شكل الاستجابة المختلف
     const data = Array.isArray(res.data) ? res.data
                 : Array.isArray(res.data?.results) ? res.data.results
                 : Array.isArray(res) ? res
@@ -122,7 +120,6 @@ async function loadWarehouses() {
       });
     }
 
-    // املأ select الخاص بالمخزن الرئيسي (Affiliated)
     populateMainWarehouseSelect(data);
   } catch (err) {
     handleError(err, 'Load warehouses failed');

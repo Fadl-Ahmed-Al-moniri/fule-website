@@ -81,11 +81,9 @@ async function addNewItemRow(itemId = null, qty = '') {
     `;
     itemsTbody.appendChild(newRow);
 
-    // populate the item select list and then set value if provided
     await populateSelect(newRow.querySelector('.item-select'), API_ENDPOINTS.Inventory.items, 'Select Item');
 
     if (itemId) {
-        // try to set the value; if option not present, leave as-is
         const sel = newRow.querySelector('.item-select');
         const opt = Array.from(sel.options).find(o => String(o.value) === String(itemId));
         if (opt) sel.value = itemId;
@@ -96,7 +94,6 @@ async function addNewItemRow(itemId = null, qty = '') {
         qInput.value = qty;
     }
 
-    // remove handler
     newRow.querySelector('.remove-item').addEventListener('click', () => {
         newRow.remove();
     });
@@ -104,7 +101,6 @@ async function addNewItemRow(itemId = null, qty = '') {
     return newRow;
 }
 
-/* ---------- Load Return Supply Operations list (table) ---------- */
 async function loadReturnSupplyOperations() {
     try {
         showLoader();
@@ -149,12 +145,7 @@ async function loadReturnSupplyOperations() {
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${op.recipient_user_name ?? 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${op.operation_statement || 'N/A'}</td>
                 <td class="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">${op.date_actual_response ?? ''}</td>
-                <td class="px-4 py-4 text-sm">
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <button class="btn-edit text-xs px-3 py-1" data-id="${op.id}">Edit</button>
-                        <button class="btn-danger text-xs px-3 py-1" data-id="${op.id}">Delete</button>
-                    </div>
-                </td>
+
             `;
             operationsBody.appendChild(tr);
 
@@ -186,11 +177,9 @@ async function loadReturnSupplyOperations() {
     }
 }
 
-/* ---------- When user selects an original supply operation: auto-fill fields ---------- */
 supplyOperationSelect.addEventListener('change', async () => {
     const selectedId = supplyOperationSelect.value;
     if (!selectedId) {
-        // clear relevant fields
         warehouseSelect.value = '';
         supplierSelect.value = '';
         stationSelect.value = '';
@@ -211,18 +200,15 @@ supplyOperationSelect.addEventListener('change', async () => {
         if (res.status && res.status >= 400) throw new Error('Failed to fetch selected supply operation');
         const op = res.data ?? res;
 
-        // Fill main fields (use IDs for selects)
         if (op.warehouse) warehouseSelect.value = op.warehouse;
         if (op.supplier) supplierSelect.value = op.supplier;
         if (op.stations) stationSelect.value = op.stations;
         if (op.operation_date) operationDateInput.value = toLocalDatetimeInput(op.operation_date);
 
-        // Populate items table based on original operation items
         itemsTbody.innerHTML = '';
         const itemsList = op.items || op.items_details || [];
-        // Ensure items list is available in selects by awaiting populate per row
         for (const it of itemsList) {
-            const itemId = it.item ?? it.item_id ?? it.item; // tolerant
+            const itemId = it.item ?? it.item_id ?? it.item; 
             const qty = it.quantity ?? it.effective_quantity ?? 0;
             await addNewItemRow(itemId, qty);
         }
@@ -233,13 +219,10 @@ supplyOperationSelect.addEventListener('change', async () => {
     }
 });
 
-/* ---------- format ISO datetime to value acceptable by datetime-local input ----- */
 function toLocalDatetimeInput(isoString) {
     if (!isoString) return '';
-    // try to parse and produce YYYY-MM-DDTHH:MM (no seconds, local)
     const d = new Date(isoString);
-    if (isNaN(d.getTime())) return isoString; // fallback
-    // Build local ISO string without seconds and timezone
+    if (isNaN(d.getTime())) return isoString; 
     const pad = (n) => String(n).padStart(2, '0');
     const yyyy = d.getFullYear();
     const mm = pad(d.getMonth() + 1);
@@ -249,7 +232,6 @@ function toLocalDatetimeInput(isoString) {
     return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
 }
 
-/* ---------- Fill form for editing an existing return-supply operation ---------- */
 async function fillFormForEdit(id) {
     try {
         showLoader();
@@ -257,14 +239,12 @@ async function fillFormForEdit(id) {
         if (res.status && res.status >= 400) throw new Error('Failed to fetch return operation');
         const op = res.data ?? res;
 
-        // Populate selects master lists first (ensure options exist)
         await Promise.all([
             populateSelect(warehouseSelect, API_ENDPOINTS.Inventory.warehouses, 'Select Warehouse'),
             populateSelect(supplierSelect, API_ENDPOINTS.Accounts.suppliers, 'Select Supplier'),
             populateSelect(stationSelect, API_ENDPOINTS.Inventory.stations, 'Select Station'),
         ]);
 
-        // Fill fields
         supplyOperationSelect.value = op.original_operation ?? '';
         if (op.warehouse) warehouseSelect.value = op.warehouse;
         if (op.supplier) supplierSelect.value = op.supplier;
@@ -277,7 +257,6 @@ async function fillFormForEdit(id) {
         statementInput.value = op.operation_statement ?? '';
         descriptionInput.value = op.operation_descrabtion ?? '';
 
-        // Load items
         itemsTbody.innerHTML = '';
         const itemsList = op.items || op.items_details || [];
         for (const it of itemsList) {
@@ -286,7 +265,6 @@ async function fillFormForEdit(id) {
             await addNewItemRow(itemId, qty);
         }
 
-        // Open modal (assumes Alpine: clicking the open button opens modal)
         document.querySelector('[x-data]').__x.$data.openModal();
     } catch (err) {
         handleError(err, 'Fill form for edit failed');
@@ -295,14 +273,12 @@ async function fillFormForEdit(id) {
     }
 }
 
-/* ---------- Form submit handler (create new return supply) ---------- */
 async function handleFormSubmit(e) {
     e.preventDefault();
     showLoader();
 
 
 
-    // validations (keep same fields as before)
     const supplyOperation = supplyOperationSelect.value;
     const warehouseId = warehouseSelect.value;
     const supplierId = supplierSelect.value;
@@ -385,7 +361,6 @@ async function handleFormSubmit(e) {
     }
 }
 
-/* ---------- Fill supplyOperationSelect (list of supply ops to choose from) ---------- */
 async function populateSupplyOperationsSelect() {
     try {
         const res = await getRequest(API_ENDPOINTS.Operations.supply, token);
@@ -394,7 +369,6 @@ async function populateSupplyOperationsSelect() {
         supplyOperationSelect.innerHTML = `<option value="">Select supply operation</option>`;
         const list = Array.isArray(res.data) ? res.data : Array.isArray(res.data?.results) ? res.data.results : [];
         list.forEach(op => {
-            // human readable label: id - warehouse - date
             const label = `#${op.id} — ${op.warehouse_name ?? 'Warehouse'} — ${op.operation_date ? new Date(op.operation_date).toLocaleDateString() : ''}`;
             const option = document.createElement('option');
             option.value = op.id;
@@ -407,20 +381,15 @@ async function populateSupplyOperationsSelect() {
     }
 }
 
-/* ---------- Initialization ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-    // populate selects
     populateSelect(warehouseSelect, API_ENDPOINTS.Inventory.warehouses, 'Select Warehouse');
     populateSelect(supplierSelect, API_ENDPOINTS.Accounts.suppliers, 'Select Supplier');
     populateSelect(stationSelect, API_ENDPOINTS.Inventory.stations, 'Select Station');
 
-    // populate supply operations list for original-operation selection
     populateSupplyOperationsSelect();
 
-    // load existing return-supply operations table
     loadReturnSupplyOperations();
 
-    // handlers
     form.addEventListener('submit', handleFormSubmit);
     addItemBtn.addEventListener('click', () => addNewItemRow());
 });

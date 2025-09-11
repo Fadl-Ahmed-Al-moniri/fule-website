@@ -20,12 +20,10 @@ const generateReportBtn = document.getElementById('generateReportBtn');
 const exportExcelBtn = document.getElementById('exportExcelBtn');
 const exportPdfBtn = document.getElementById('exportPdfBtn');
 
-// Report template elements
 const warehouseReportTemplate = document.getElementById('warehouseReportTemplate');
 const itemReportTemplate = document.getElementById('itemReportTemplate');
 const statusReportTemplate = document.getElementById('statusReportTemplate');
 
-// Report data containers
 const reportData = document.getElementById('reportData');
 const reportLoading = document.getElementById('reportLoading');
 const reportEmpty = document.getElementById('reportEmpty');
@@ -34,9 +32,7 @@ const reportSubtitle = document.getElementById('reportSubtitle');
 const reportDate = document.getElementById('reportDate');
 const reportCount = document.getElementById('reportCount');
 
-/**
- * Initialize the reports interface
- */
+
 async function initializeReports() {
     try {
         showLoader();
@@ -54,9 +50,7 @@ async function initializeReports() {
     }
 }
 
-/**
- * Load warehouses for the filter dropdown
- */
+
 async function loadWarehouses() {
     try {
         const response = await getRequest(API_ENDPOINTS.Inventory.warehouses, token);

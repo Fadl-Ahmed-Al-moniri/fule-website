@@ -22,7 +22,6 @@ function closeModal() {
   if (closeBtn) closeBtn.click();
 }
 
-// خطأ 
 function handleError(err, ctx = '') {
   console.error(ctx, err);
   alert((ctx ? ctx + ': ' : '') + (err.message || err));
@@ -67,7 +66,6 @@ async function updateItem(id, data) {
   }
 }
 
-// تحميل الأصناف (GET)
 async function loadItems() {
   try {
     showLoader();
@@ -140,11 +138,7 @@ async function loadItems() {
 
         const deleteBtn = tr.querySelector('button[aria-label="Delete"]');
         deleteBtn.addEventListener('click', () => deleteItem(item.id));
-        // tr.querySelector('.status-toggle').addEventListener('click', (e) => {
-        //     const id    = e.target.dataset.id;
-        //     const active   = e.target.dataset.active === 'true';
-        //     toggleEmployeeStatus(email, !active);
-        // });
+
     });
   } catch (err) {
     handleError(err, 'Load items failed');
@@ -171,7 +165,6 @@ async function deleteItem(id) {
 }
 
 
-// معالجة النموذج (create / update)
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = itemIdInput.value;
@@ -190,8 +183,6 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// تحميل البيانات عند فتح الصفحة
 document.addEventListener('DOMContentLoaded', () => {
   loadItems();
-  // initLogout && initLogout(); // إذا عندك دالة خروج
 });

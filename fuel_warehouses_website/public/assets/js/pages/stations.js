@@ -28,10 +28,9 @@ function closeModal() {
 }
 
 function openModal() {
-  if (openBtn) openBtn.click(); // يفترض Alpine يتعامل مع هذا لفتح المودال
+  if (openBtn) openBtn.click();
 }
 
-/** تحميل المحطات وعرضها في الجدول */
 async function loadStations() {
   try {
     showLoader();
@@ -40,7 +39,6 @@ async function loadStations() {
       throw new Error(res.message || `Failed to fetch stations (status ${res.status})`);
     }
 
-    // دعم أشكال استجابة مختلفة
     const data = Array.isArray(res.data) ? res.data
                : Array.isArray(res.data?.results) ? res.data.results
                : Array.isArray(res) ? res
@@ -103,7 +101,6 @@ async function loadStations() {
 
       stationsBody.appendChild(tr);
 
-      // ربط حدث التعديل
       const editBtn = tr.querySelector('.edit-btn');
       if (editBtn) {
         editBtn.addEventListener('click', (e) => {
@@ -116,12 +113,10 @@ async function loadStations() {
           const name = editBtn.dataset.name;
           const location = editBtn.dataset.location;
 
-          // املأ الحقول
           stationsIdInput.value = id ?? '';
           nameInput.value = name ?? '';
           locationInput.value = location ?? '';
 
-          // افتح المودال
           openModal();
         });
 
@@ -131,8 +126,6 @@ async function loadStations() {
         const deleteBtn = tr.querySelector('button[aria-label="Delete"]');
         deleteBtn.addEventListener('click', () => deleteStation(st.id));
 
-      // (اختياري) إذا أردت فتح الفورم عبر النقر على الصف نفسه:
-      // tr.addEventListener('click', () => { /* ملء وفتح */ });
     });
 
   } catch (err) {
@@ -142,7 +135,6 @@ async function loadStations() {
   }
 }
 
-/** إنشاء محطة جديدة */
 async function createStation(payload) {
   try {
     showLoader();
@@ -162,7 +154,6 @@ async function createStation(payload) {
   }
 }
 
-/** تحديث محطة (PUT) */
 async function updateStation(id, payload) {
   try {
     showLoader();
@@ -183,7 +174,6 @@ async function updateStation(id, payload) {
   }
 }
 
-// معالجة الفورم (create / update)
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = stationsIdInput.value;
@@ -221,15 +211,12 @@ async function deleteStation(id) {
     }
 }
 
-// عند الضغط على زر "Add Stations" نضمن أن البيانات محملة (اختياري)
 if (openBtn) {
   openBtn.addEventListener('click', async () => {
-    // تأكد من أن الجدول محدث قبل فتح الفورم
     await loadStations();
   });
 }
 
-// تحميل المحطات عند فتح الصفحة
 document.addEventListener('DOMContentLoaded', () => {
   loadStations();
 });

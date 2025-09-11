@@ -9,9 +9,8 @@ const token = getUserToken();
 
 const form = document.getElementById('supply_form');
 const openBtn = document.getElementById('open');
-const suppliersBody = document.getElementById('stationsBody'); // كما في الـ HTML لديك
-const noSuppliersMsg = document.getElementById('no_stations'); // رسالة لا توجد موردين
-
+const suppliersBody = document.getElementById('stationsBody');
+const noSuppliersMsg = document.getElementById('no_stations'); 
 const supplyIdInput = document.getElementById('supplyId');
 const nameInput = document.getElementById('name');
 const phoneInput = document.getElementById('phone_number');
@@ -30,7 +29,6 @@ function openModal() {
   if (openBtn) openBtn.click();
 }
 
-/** جلب الموردين وعرضهم */
 async function loadSuppliers() {
   try {
     showLoader();
@@ -129,7 +127,6 @@ async function loadSuppliers() {
   }
 }
 
-/** إنشاء مورد جديد (POST) */
 async function createSupplier(payload) {
   try {
     showLoader();
@@ -149,7 +146,6 @@ async function createSupplier(payload) {
   }
 }
 
-/** تحديث مورد (PUT) */
 async function updateSupplier(id, payload) {
   try {
     showLoader();
@@ -170,7 +166,6 @@ async function updateSupplier(id, payload) {
   }
 }
 
-// معالجة الفورم (create / update)
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = supplyIdInput.value;
@@ -208,14 +203,12 @@ async function deleteSuppliers(id) {
     }
 }
 
-// عند الضغط على زر "Add Supply" نعيد تحميل القائمة قبل فتح الفورم
 if (openBtn) {
   openBtn.addEventListener('click', async () => {
     await loadSuppliers();
   });
 }
 
-// تحميل الموردين عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
   loadSuppliers();
 });

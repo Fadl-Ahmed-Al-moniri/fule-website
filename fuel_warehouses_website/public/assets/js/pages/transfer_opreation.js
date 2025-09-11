@@ -97,7 +97,6 @@ async function loadtransferOperations() {
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150';
             
-            // تحويل التاريخ إلى صيغة مقروءة
             const operationDate = new Date(op.operation_date).toLocaleDateString();
             const itemsHtml = op.items_details.map(item => {
             const formattedQuantity = parseFloat(item.quantity).toLocaleString('en-US');

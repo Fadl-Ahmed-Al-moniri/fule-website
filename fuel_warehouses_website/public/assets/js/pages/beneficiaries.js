@@ -1,4 +1,3 @@
-// assets/js/beneficiaries.js
 import { postRequest, getRequest, putRequest,deleteRequest } from '../services/apiService.js';
 import { showLoader, hideLoader } from '../utils/loader.js';
 import { getUserToken } from '../utils/user-token.js';
@@ -29,7 +28,6 @@ function openModal() {
   if (openBtn) openBtn.click();
 }
 
-/** تحميل المستفيدين وعرضهم */
 async function loadBeneficiaries() {
   try {
     showLoader();
@@ -122,7 +120,6 @@ async function loadBeneficiaries() {
   }
 }
 
-/** إنشاء مستفيد جديد (POST) */
 async function createBeneficiary(payload) {
   try {
     showLoader();
@@ -142,7 +139,6 @@ async function createBeneficiary(payload) {
   }
 }
 
-/** تحديث مستفيد (PUT) */
 async function updateBeneficiary(id, payload) {
   try {
     showLoader();
@@ -184,7 +180,6 @@ async function deleteBeneficiaries(id) {
 }
 
 
-// معالجة الفورم (create / update)
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = beneficiaryIdInput.value;
@@ -205,14 +200,12 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// عند الضغط على زر "Add beneficiary" نعيد تحميل القائمة قبل فتح الفورم
 if (openBtn) {
   openBtn.addEventListener('click', async () => {
     await loadBeneficiaries();
   });
 }
 
-// تحميل المستفيدين عند فتح الصفحة
 document.addEventListener('DOMContentLoaded', () => {
   loadBeneficiaries();
 });

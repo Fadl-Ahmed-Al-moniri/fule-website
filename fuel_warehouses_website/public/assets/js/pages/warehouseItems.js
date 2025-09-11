@@ -6,12 +6,10 @@ import { API_ENDPOINTS } from '../endpoint.js';
 
 const token = getUserToken();
 
-// عناصر الـ DOM (مطابقة للـ HTML الذي زودتني به)
-const form = document.getElementById('warehouse_form'); // الفورم في المودال
+const form = document.getElementById('warehouse_form'); 
 const tableBody = document.getElementById('warehouseBody');
 const noMsg = document.getElementById('no_warehouse');
-
-const hiddenId = document.getElementById('warehouseId'); // يستخدم لحفظ id للسجل (edit)
+const hiddenId = document.getElementById('warehouseId'); 
 const warehouseSelect = document.getElementById('warehouse');
 const itemSelect = document.getElementById('item');
 const unitSelect = document.getElementById('unit_of_measure');
@@ -42,9 +40,6 @@ function openModal() {
   if (openBtn) openBtn.click();
 }
 
-/* -------------------------
-   UTIL: parse response data
-   ------------------------- */
 function extractListFromResponse(res) {
   if (!res) return [];
   if (Array.isArray(res.data)) return res.data;
@@ -53,9 +48,7 @@ function extractListFromResponse(res) {
   return res.data ? (Array.isArray(res.data) ? res.data : [res.data]) : [];
 }
 
-/* -------------------------
-   Populate selects
-   ------------------------- */
+
 async function loadWarehouseOptions(selectedId = null) {
   try {
     const res = await getRequest(API_ENDPOINTS.Inventory.warehouses, token);
@@ -103,9 +96,7 @@ function populateUnitSelect(selectedValue = null) {
   });
 }
 
-/* -------------------------
-   Load table of warehouse-items
-   ------------------------- */
+
 async function loadWarehouseItems() {
   try {
     showLoader();
@@ -217,9 +208,6 @@ async function loadWarehouseItems() {
   }
 }
 
-/* -------------------------
-   CRUD: create / update / delete
-   ------------------------- */
 async function createWarehouseItem(payload) {
   try {
     showLoader();
@@ -277,9 +265,7 @@ async function deleteWarehouseItem(id) {
   }
 }
 
-/* -------------------------
-   Form handling
-   ------------------------- */
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -288,7 +274,6 @@ form.addEventListener('submit', async (e) => {
     warehouse: warehouseSelect.value || null,
     item: itemSelect.value || null,
     opening_balance: openingBalanceInput.value ? Number(openingBalanceInput.value) : 0,
-    // current_quantity is read-only in serializer — if backend blocks it, remove or ignore it.
     current_quantity: currentQuantityInput.value ? Number(currentQuantityInput.value) : 0,
     unit_of_measure: unitSelect.value || null,
   };
@@ -313,15 +298,10 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-/* -------------------------
-   When opening modal: ensure selects loaded
-   ------------------------- */
 if (openBtn) {
   openBtn.addEventListener('click', async () => {
-    // Load selects fresh so user sees latest warehouses/items
-    populateUnitSelect(); // static
+    populateUnitSelect(); 
     await Promise.all([loadWarehouseOptions(), loadItemOptions()]);
-    // reset form for create
     hiddenId.value = '';
     form.reset();
     if (operationTypeTitle) operationTypeTitle.textContent = 'Create Warehouse Item';
@@ -332,6 +312,5 @@ if (openBtn) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   populateUnitSelect();
-  // preload selects and table
   await Promise.all([loadWarehouseOptions(), loadItemOptions(), loadWarehouseItems()]);
 });
