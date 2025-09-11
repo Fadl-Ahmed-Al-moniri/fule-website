@@ -209,7 +209,7 @@ async function deleteStation(id) {
     try {
         showLoader();
         const url = `${API_ENDPOINTS.Inventory.stations}${id}/`;
-        const response = await deleteRequest(url, {}, token);
+        const response = await deleteRequest(url, token);
         if (response.status === 204) {
             alert("delete successfully!");
             loadStations();

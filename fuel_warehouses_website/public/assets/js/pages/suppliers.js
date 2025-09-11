@@ -196,7 +196,7 @@ async function deleteSuppliers(id) {
     try {
         showLoader();
         const url = `${API_ENDPOINTS.Accounts.suppliers}${id}/`;
-        const response = await deleteRequest(url, {}, token);
+        const response = await deleteRequest(url,token);
         if (response.status === 204) {
             alert("delete successfully!");
             loadSuppliers();

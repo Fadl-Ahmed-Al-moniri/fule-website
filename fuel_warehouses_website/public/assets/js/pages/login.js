@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (response.status ===200){
             alert("Logged in successfully");
+            alert(response.data.access);
             localStorage.setItem('user_token',  response.data.access);
 
             window.location.href = '../index.html';

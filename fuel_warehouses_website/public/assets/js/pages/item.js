@@ -3,7 +3,6 @@ import { showLoader, hideLoader } from '../utils/loader.js';
 import { getUserToken } from '../utils/user-token.js';
 import { API_ENDPOINTS } from '../endpoint.js';
 
-const API_URL = 'http://127.0.0.1:8000/api/inventory/item/'; // نقطة النهاية التي طلبتها
 const token = getUserToken();
 
 const form = document.getElementById('item_form');
@@ -32,7 +31,7 @@ function handleError(err, ctx = '') {
 async function createItem(data) {
   try {
     showLoader();
-    const res = await postRequest(API_ENDPOINTS.Inventory.items, data);
+    const res = await postRequest(API_ENDPOINTS.Inventory.items, data, token, {}, false);
     if (res.status === 201) {
       alert('Item created successfully!');
       await loadItems();
@@ -52,7 +51,7 @@ async function updateItem(id, data) {
   try {
     showLoader();
     const url = `${API_ENDPOINTS.Inventory.items}${id}/`;
-    const res = await putRequest(url, data, token, );
+    const res = await putRequest(url, data, token, false);
     if (res.status === 200) {
       alert('Item updated successfully!');
       await loadItems();
@@ -74,7 +73,7 @@ async function loadItems() {
     showLoader();
     const res = await getRequest(API_ENDPOINTS.Inventory.items, token);
     if (res.status !== 200) throw new Error('Failed to fetch items');
-    const data = res.data || res; // اعتمادًا على شكل الـ service
+    const data = res.data || res; 
     itemBody.innerHTML = '';
 
     if (!data || data.length === 0) {
@@ -158,8 +157,8 @@ async function loadItems() {
 async function deleteItem(id) {
     try {
         showLoader();
-        const url = `${API_URL}${id}/`;
-        const response = await deleteRequest(url, {}, token);
+        const url = `${API_ENDPOINTS.Inventory.items}${id}/`;
+        const response = await deleteRequest(url,  token,{});
         if (response.status === 204) {
             alert("delete successfully!");
             loadItems();

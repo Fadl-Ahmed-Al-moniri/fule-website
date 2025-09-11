@@ -4,7 +4,6 @@ import { showLoader, hideLoader } from '../utils/loader.js';
 import { getUserToken } from '../utils/user-token.js';
 import { API_ENDPOINTS } from '../endpoint.js';
 
-const API_URL = 'http://127.0.0.1:8000/api/inventory/warehouse/';
 const token = getUserToken();
 
 const form = document.getElementById('warehouse_form');
@@ -137,7 +136,7 @@ async function deleteWarehouse(id) {
     try {
         showLoader();
         const url = `${API_ENDPOINTS.Inventory.warehouses}${id}/`;
-        const response = await deleteRequest(url, {}, token);
+        const response = await deleteRequest(url,  token);
         if (response.status === 204) {
             alert("delete successfully!");
             loadBeneficiaries();
@@ -151,13 +150,11 @@ async function deleteWarehouse(id) {
 
 
 function populateMainWarehouseSelect(data) {
-  // افراغ الاختيارات مع خيار افتراضي
   mainWarehouseSelect.innerHTML = '<option value="">Select main warehouse</option>';
   if (!Array.isArray(data)) return;
   data.forEach(w => {
     const opt = document.createElement('option');
     opt.value = w.id ?? '';
-    // افضل إظهار الاسم + id لو متاح
     opt.textContent = w.name ? `${w.name}${w.id ? ' ('+w.id+')' : ''}` : (w.id ?? '');
     mainWarehouseSelect.appendChild(opt);
   });
@@ -166,7 +163,7 @@ function populateMainWarehouseSelect(data) {
 async function createWarehouse(payload) {
   try {
     showLoader();
-    const res = await postRequest(API_ENDPOINTS.Inventory.warehouses, payload, token);
+    const res = await postRequest(API_ENDPOINTS.Inventory.warehouses, payload, token,{},false);
     if (res.status === 201 || res.status === 200) {
       alert('Warehouse created successfully!');
       await loadWarehouses();
@@ -176,7 +173,7 @@ async function createWarehouse(payload) {
       throw new Error(res.message || 'Create warehouse failed');
     }
   } catch (err) {
-    handleError(err, 'Create warehouse failed');
+    handleError(err.message, 'Create warehouse failed');
   } finally {
     hideLoader();
   }
@@ -186,7 +183,6 @@ async function updateWarehouse(id, payload) {
   try {
     showLoader();
     const url = `${API_ENDPOINTS.Inventory.warehouses}${id}/`;
-    // إذا postRequest يدعم method مختلف، أرسِل PUT، وإلا يمكنك عمل postRequest إلى endpoint مختلف
     const res = await putRequest(url, payload, token, );
     if (res.status === 200) {
       alert('Warehouse updated successfully!');
@@ -203,7 +199,6 @@ async function updateWarehouse(id, payload) {
   }
 }
 
-// معالجة الفورم
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = warehouseIdInput.value;
@@ -211,16 +206,20 @@ form.addEventListener('submit', async (e) => {
     name: nameInput.value.trim(),
     calssification: classificationInput.value.trim(),
     storekeeper: storekeeperInput.value.trim(),
-    parent: mainWarehouseSelect.value || null,
     phone_warehouse: phoneInput.value.trim()
   };
+
 
   if (!payload.name) {
     alert('Please enter warehouse name');
     return;
   }
+  if (mainWarehouseSelect.value) {
+    payload['parent'] = mainWarehouseSelect.value;
+  }
 
   if (id) {
+    payload['storekeeper'] = storekeeperInput.value.trim() || null;
     await updateWarehouse(id, payload);
   } else {
     await createWarehouse(payload);

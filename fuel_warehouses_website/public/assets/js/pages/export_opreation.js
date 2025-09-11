@@ -296,8 +296,17 @@ async function handleModifyFormSubmit(e) {
                 modifyForm.reset();
                 await loadexportOperations();
             } else {
-                throw new Error(JSON.stringify(res.data));
+            const errorData = res.data;
+            let errorMessages = 'Failed to create operation:\n';
+            for (const key in errorData) {
+                if (Array.isArray(errorData[key])) {
+                    errorMessages += `${key}: ${errorData[key].join(', ')}\n`;
+                } else {
+                    errorMessages += `${key}: ${errorData[key]}\n`;
+                }
             }
+            alert(errorMessages);
+        }
         } catch (error) {
             console.error('Save Modification Failed:', error);
             alert(`Failed to save modification: ${error.message}`);
